@@ -220,15 +220,6 @@ export default function Home() {
                   <CardContent>
                     <div className="space-y-4">
                       <div>
-                        <Label htmlFor="slurryStartDepth">Slurry Start Depth (ft from bottom)</Label>
-                        <Input
-                            id="slurryStartDepth"
-                            type="number"
-                            value={slurryStartDepth}
-                            onChange={(e) => setSlurryStartDepth(Number(e.target.value))}
-                        />
-                      </div>
-                      <div>
                         <Label htmlFor="slurryDepth">Slurry Depth (ft)</Label>
                         <Input
                             id="slurryDepth"
