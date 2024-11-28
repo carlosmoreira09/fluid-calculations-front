@@ -19,7 +19,7 @@ interface OilWellProps {
     totalDepth: number;
     fluids: Fluid[];
     slurryDepth: number;
-    slurryStartDepth: number;
+    slurryStartDepth?: number;
     innerSlurryDepth: number;
 }
 
@@ -30,12 +30,12 @@ const OilWell: React.FC<OilWellProps> = ({
                                              totalDepth,
                                              fluids,
                                              slurryDepth,
-                                             slurryStartDepth,
                                              innerSlurryDepth
                                          }) => {
     const svgWidth = 800; // Increased width to accommodate the table
     const svgHeight = 1000;
     const scale = 8;
+
     const wellCenterX = 300; // Adjusted to make room for the table
     const groundLevel = 150;
     const scaledTotalDepth = totalDepth / 6;
@@ -73,7 +73,7 @@ const OilWell: React.FC<OilWellProps> = ({
 
     const drawPacker = (depth: number) => {
         const scaledDepth = depth / 6;
-        const packerWidth = openHoleDiameter * scale;
+        const packerWidth = openHoleDiameter *10;
         return (
             <rect
                 x={wellCenterX - packerWidth / 2}
