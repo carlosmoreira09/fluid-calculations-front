@@ -8,21 +8,16 @@ export default function Home() {
       </h1>
       <nav className="space-x-4">
         <Link 
-          href="/about" 
+          href="#"
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300"
         >
-          About
+          Drilling Fluids
         </Link>
         <Link 
           href="/blog" 
           className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-300"
         >
-        </Link>
-        <Link 
-          href="/contact" 
-          className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded transition duration-300"
-        >
-          Contact
+            Cementing Fluids
         </Link>
       </nav>
     </main>
