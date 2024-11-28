@@ -292,7 +292,6 @@ export default function Home() {
                 totalDepth={totalDepth}
                 fluids={fluids}
                 slurryDepth={slurryDepth}
-                slurryStartDepth={slurryStartDepth}
             />
           </div>
         </div>
