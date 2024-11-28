@@ -20,7 +20,6 @@ interface OilWellProps {
     fluids: Fluid[];
     slurryDepth: number;
     slurryStartDepth?: number;
-    innerSlurryDepth?: number;
 }
 
 const OilWell: React.FC<OilWellProps> = ({
@@ -29,8 +28,7 @@ const OilWell: React.FC<OilWellProps> = ({
                                              packerDepth,
                                              totalDepth,
                                              fluids,
-                                             slurryDepth,
-                                             innerSlurryDepth
+                                             slurryDepth
                                          }) => {
     const svgWidth = 800; // Increased width to accommodate the table
     const svgHeight = 1000;
