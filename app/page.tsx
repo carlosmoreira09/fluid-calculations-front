@@ -14,7 +14,7 @@ export default function Home() {
           Drilling Fluids
         </Link>
         <Link 
-          href="/blog" 
+          href="/cementing"
           className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-300"
         >
             Cementing Fluids
