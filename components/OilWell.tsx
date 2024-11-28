@@ -19,10 +19,9 @@ interface OilWellProps {
     totalDepth: number;
     fluids: Fluid[];
     slurryDepth: number;
-    slurryStartDepth: number;
 }
 
-const OilWell: React.FC<OilWellProps> = ({ sections, openHoleDiameter, packerDepth, totalDepth, fluids, slurryDepth, slurryStartDepth }) => {
+const OilWell: React.FC<OilWellProps> = ({ sections, openHoleDiameter, packerDepth, totalDepth, fluids, slurryDepth }) => {
     const svgWidth = 500;
     const svgHeight = 800;
     const scale = 10; // Scale factor for better visibility
