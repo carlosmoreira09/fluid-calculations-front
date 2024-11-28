@@ -98,6 +98,27 @@ export default function Home() {
                     <CardTitle>Well Sections</CardTitle>
                   </CardHeader>
                   <CardContent>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Packer Depth (feet)
+                        <input
+                            type="range"
+                            min="0"
+                            max={sections[sections.length - 1].depth}
+                            step="1"
+                            value={packerDepth || 0}
+                            onChange={(e) => setPackerDepth(Number(e.target.value))}
+                            className="mt-1 block w-full"
+                        />
+                        <span>{packerDepth !== null ? `${packerDepth.toFixed(2)} ft` : 'No packer'}</span>
+                      </label>
+                      <button
+                          onClick={() => setPackerDepth(null)}
+                          className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                      >
+                        Remove Packer
+                      </button>
+                    </div>
                     {sections.map((section, index) => (
                         <div key={index} className="mb-4 p-4 border rounded">
                           <h4 className="font-bold mb-2">Section {index + 1}</h4>
