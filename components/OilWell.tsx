@@ -20,7 +20,7 @@ interface OilWellProps {
     fluids: Fluid[];
     slurryDepth: number;
     slurryStartDepth?: number;
-    innerSlurryDepth: number;
+    innerSlurryDepth?: number;
 }
 
 const OilWell: React.FC<OilWellProps> = ({
