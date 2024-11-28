@@ -19,9 +19,10 @@ interface OilWellProps {
     totalDepth: number;
     fluids: Fluid[];
     slurryDepth: number;
+    slurryStartDepth: number;
 }
 
-const OilWell: React.FC<OilWellProps> = ({ sections, openHoleDiameter, packerDepth, totalDepth, fluids, slurryDepth }) => {
+const OilWell: React.FC<OilWellProps> = ({ sections, openHoleDiameter, packerDepth, totalDepth, fluids, slurryDepth, slurryStartDepth }) => {
     const svgWidth = 500;
     const svgHeight = 800;
     const scale = 10; // Scale factor for better visibility
@@ -82,9 +83,14 @@ const OilWell: React.FC<OilWellProps> = ({ sections, openHoleDiameter, packerDep
             const scaledStartDepth = startDepth / 5;
             const scaledEndDepth = endDepth / 5;
             const fluidWidth = openHoleDiameter * scale;
-            const externalDiameter = sections.find(section => section.depth > startDepth)?.internalDiameter +
-                2 * sections.find(section => section.depth > startDepth)?.wallThickness || 0;
-            const scaledExternalDiameter = externalDiameter * scale;
+            const externalDiameter = sections.find(section => section.depth > startDepth)?.internalDiameter;
+            const externalDiameter2 = sections.find(section => section.depth > startDepth)?.wallThickness || 0;
+            let scaledExternalDiameter;
+            if(externalDiameter) {
+                const anotherExternalDiamter = externalDiameter + 2 * externalDiameter2;
+                 scaledExternalDiameter = anotherExternalDiamter * scale;
+            }
+
 
             // Generate a color based on fluid density (darker = denser)
             const colorIntensity = Math.max(0, Math.min(255, Math.floor(255 - fluid.density * 50)));
@@ -94,7 +100,7 @@ const OilWell: React.FC<OilWellProps> = ({ sections, openHoleDiameter, packerDep
                 return (
                     <g key={`fluid-${index}`}>
                         <rect
-                            x={wellCenterX - scaledExternalDiameter / 2}
+                            x={scaledExternalDiameter? wellCenterX - scaledExternalDiameter / 2 : ''}
                             y={groundLevel + scaledStartDepth}
                             width={scaledExternalDiameter}
                             height={scaledEndDepth - scaledStartDepth}
@@ -120,23 +126,27 @@ const OilWell: React.FC<OilWellProps> = ({ sections, openHoleDiameter, packerDep
         const scaledSlurryStartDepth = (totalDepth - slurryDepth) / 5;
         const scaledSlurryEndDepth = totalDepth / 5;
         const slurryWidth = openHoleDiameter * scale;
-        const externalDiameter = sections.find(section => section.depth > totalDepth - slurryDepth)?.internalDiameter +
-            2 * sections.find(section => section.depth > totalDepth - slurryDepth)?.wallThickness || 0;
-        const scaledExternalDiameter = externalDiameter * scale;
+        const externalDiameter = sections.find(section => section.depth > totalDepth - slurryDepth)?.internalDiameter
+        const externalDiameter2 = sections.find(section => section.depth > totalDepth - slurryDepth)?.wallThickness || 0;
+        let scaledExternalDiameter
+        if(externalDiameter) {
+            const anotherDiameter = externalDiameter + 2 * externalDiameter2
+            scaledExternalDiameter = anotherDiameter * scale;
+        }
 
         return (
             <g key="cement-slurry">
                 <rect
                     x={wellCenterX - slurryWidth / 2}
                     y={groundLevel + scaledSlurryStartDepth}
-                    width={(slurryWidth - scaledExternalDiameter) / 2}
+                    width={scaledExternalDiameter? (slurryWidth - scaledExternalDiameter) / 2 : ''}
                     height={scaledSlurryEndDepth - scaledSlurryStartDepth}
                     fill="#4a4a4a" // Dark gray for cement
                 />
                 <rect
-                    x={wellCenterX + scaledExternalDiameter / 2}
+                    x={scaledExternalDiameter? wellCenterX + scaledExternalDiameter / 2 : ''}
                     y={groundLevel + scaledSlurryStartDepth}
-                    width={(slurryWidth - scaledExternalDiameter) / 2}
+                    width={scaledExternalDiameter? (slurryWidth - scaledExternalDiameter) / 2 : ''}
                     height={scaledSlurryEndDepth - scaledSlurryStartDepth}
                     fill="#4a4a4a" // Dark gray for cement
                 />
