@@ -10,7 +10,6 @@ interface CementJobProps {
   openHoleDiameter: number;
   casingOuterDiameter: number;
   totalDepth?: number;
-  innerSlurryDepth: number
 }
 
 const CementJob: React.FC<CementJobProps> = ({
@@ -19,8 +18,7 @@ const CementJob: React.FC<CementJobProps> = ({
   slurryDensity,
   slurryYield,
   openHoleDiameter,
-  casingOuterDiameter,
-                                               innerSlurryDepth
+  casingOuterDiameter
 }) => {
   // Calculate annular volume
   const annularVolume = calculateAnnularVolume(slurryDepth, openHoleDiameter, casingOuterDiameter);

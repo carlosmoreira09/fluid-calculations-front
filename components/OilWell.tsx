@@ -20,34 +20,25 @@ interface OilWellProps {
     fluids: Fluid[];
     slurryDepth: number;
     slurryStartDepth: number;
-    innerSlurryDepth: number;
 }
 
-const OilWell: React.FC<OilWellProps> = ({
-                                             sections,
-                                             openHoleDiameter,
-                                             packerDepth,
-                                             totalDepth,
-                                             fluids,
-                                             slurryDepth,
-                                             innerSlurryDepth
-                                         }) => {
-    const svgWidth = 800; // Increased width to accommodate the table
-    const svgHeight = 1000;
-    const scale = 8;
+const OilWell: React.FC<OilWellProps> = ({ sections, openHoleDiameter, packerDepth, totalDepth, fluids, slurryDepth, slurryStartDepth }) => {
+    const svgWidth = 500;
+    const svgHeight = 800;
+    const scale = 10; // Scale factor for better visibility
+    const wellCenterX = svgWidth / 2;
+    const groundLevel = 100;
+    const scaledTotalDepth = totalDepth / 5; // Scale down depth for visualization
 
-    const wellCenterX = 300; // Adjusted to make room for the table
-    const groundLevel = 150;
-    const scaledTotalDepth = totalDepth / 6;
-
+    // Array of colors for different sections
     const sectionColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F06292', '#AED581', '#FFD54F'];
 
     const drawSection = (startDepth: number, endDepth: number, internalDiameter: number, wallThickness: number, color: string) => {
         const externalDiameter = internalDiameter + 2 * wallThickness;
         const scaledInternalDiameter = internalDiameter * scale;
         const scaledExternalDiameter = externalDiameter * scale;
-        const scaledStartDepth = startDepth / 6;
-        const scaledEndDepth = endDepth / 6;
+        const scaledStartDepth = startDepth / 5;
+        const scaledEndDepth = endDepth / 5;
 
         return (
             <g key={`section-${startDepth}-${endDepth}`}>
@@ -72,8 +63,8 @@ const OilWell: React.FC<OilWellProps> = ({
     };
 
     const drawPacker = (depth: number) => {
-        const scaledDepth = depth / 6;
-        const packerWidth = openHoleDiameter *10;
+        const scaledDepth = depth / 5;
+        const packerWidth = openHoleDiameter * scale;
         return (
             <rect
                 x={wellCenterX - packerWidth / 2}
@@ -88,20 +79,17 @@ const OilWell: React.FC<OilWellProps> = ({
     const drawFluids = () => {
         return fluids.map((fluid, index) => {
             const startDepth = index === 0 ? 0 : fluids[index - 1].depth;
-            const endDepth = Math.min(
-                fluid.depth,
-                totalDepth - (slurryDepth || 0),
-                totalDepth - (innerSlurryDepth || 0)
-            );
-            const scaledStartDepth = startDepth / 6;
-            const scaledEndDepth = endDepth / 6;
+            const endDepth = Math.min(fluid.depth, totalDepth - slurryDepth);
+            const scaledStartDepth = startDepth / 5;
+            const scaledEndDepth = endDepth / 5;
             const fluidWidth = openHoleDiameter * scale;
             const externalDiameter = sections.find(section => section.depth > startDepth)?.internalDiameter +
                 2 * sections.find(section => section.depth > startDepth)?.wallThickness || 0;
             const scaledExternalDiameter = externalDiameter * scale;
 
+            // Generate a color based on fluid density (darker = denser)
             const colorIntensity = Math.max(0, Math.min(255, Math.floor(255 - fluid.density * 50)));
-            const fluidColor = `rgb(${colorIntensity}, ${colorIntensity}, 255)`;
+            const fluidColor = `rgb(${colorIntensity}, ${colorIntensity}, 255)`; // Blue-based color for fluids
 
             if (endDepth > startDepth) {
                 return (
@@ -130,8 +118,8 @@ const OilWell: React.FC<OilWellProps> = ({
     };
 
     const drawCementSlurry = () => {
-        const scaledSlurryStartDepth = (totalDepth - slurryDepth) / 6;
-        const scaledSlurryEndDepth = totalDepth / 6;
+        const scaledSlurryStartDepth = (totalDepth - slurryDepth) / 5;
+        const scaledSlurryEndDepth = totalDepth / 5;
         const slurryWidth = openHoleDiameter * scale;
         const externalDiameter = sections.find(section => section.depth > totalDepth - slurryDepth)?.internalDiameter +
             2 * sections.find(section => section.depth > totalDepth - slurryDepth)?.wallThickness || 0;
@@ -144,14 +132,14 @@ const OilWell: React.FC<OilWellProps> = ({
                     y={groundLevel + scaledSlurryStartDepth}
                     width={(slurryWidth - scaledExternalDiameter) / 2}
                     height={scaledSlurryEndDepth - scaledSlurryStartDepth}
-                    fill="#4a4a4a"
+                    fill="#4a4a4a" // Dark gray for cement
                 />
                 <rect
                     x={wellCenterX + scaledExternalDiameter / 2}
                     y={groundLevel + scaledSlurryStartDepth}
                     width={(slurryWidth - scaledExternalDiameter) / 2}
                     height={scaledSlurryEndDepth - scaledSlurryStartDepth}
-                    fill="#4a4a4a"
+                    fill="#4a4a4a" // Dark gray for cement
                 />
                 <text
                     x={wellCenterX + slurryWidth / 2 + 5}
@@ -162,73 +150,6 @@ const OilWell: React.FC<OilWellProps> = ({
                 >
                     Cement ({slurryDepth.toFixed(0)} ft)
                 </text>
-            </g>
-        );
-    };
-
-    const drawInnerSlurry = () => {
-        const scaledInnerSlurryStartDepth = (totalDepth - innerSlurryDepth) / 6;
-        const scaledInnerSlurryEndDepth = totalDepth / 6;
-        const innerDiameter = sections[sections.length - 1].internalDiameter;
-        const scaledInnerDiameter = innerDiameter * scale;
-
-        return (
-            <g key="inner-slurry">
-                <rect
-                    x={wellCenterX - scaledInnerDiameter / 2}
-                    y={groundLevel + scaledInnerSlurryStartDepth}
-                    width={scaledInnerDiameter}
-                    height={scaledInnerSlurryEndDepth - scaledInnerSlurryStartDepth}
-                    fill="#4a4a4a"
-                />
-                <text
-                    x={wellCenterX}
-                    y={groundLevel + (scaledInnerSlurryStartDepth + scaledInnerSlurryEndDepth) / 2}
-                    fill="white"
-                    fontSize="12"
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                >
-                    Inner Slurry ({innerSlurryDepth?.toFixed(0)} ft)
-                </text>
-            </g>
-        );
-    };
-
-    const drawLegendTable = () => {
-        const tableX = 550;
-        const tableY = 150;
-        const rowHeight = 25;
-        const colWidths = [30, 150, 150];
-
-        const legendItems = [
-            { color: "#36454F", label: "Open Hole" },
-            ...sections.map((_, index) => ({ color: sectionColors[index % sectionColors.length], label: `Section ${index + 1}` })),
-            ...fluids.map(fluid => {
-                const colorIntensity = Math.max(0, Math.min(255, Math.floor(255 - (fluid.density || 0) * 50)));
-                const fluidColor = `rgb(${colorIntensity}, ${colorIntensity}, 255)`;
-                return {
-                    color: fluidColor,
-                    label: fluid.type,
-                    details: `Depth: ${Math.min(fluid.depth, totalDepth - (slurryDepth || 0), totalDepth - (innerSlurryDepth || 0)).toFixed(0)} ft, Density: ${(fluid.density || 0).toFixed(2)}`
-                };
-            }),
-            { color: "#4a4a4a", label: "Cement", details: `Depth: ${(totalDepth - (slurryDepth || 0)).toFixed(0)}-${totalDepth.toFixed(0)} ft` },
-            { color: "#4a4a4a", label: "Inner Slurry", details: `Depth: ${(totalDepth - (innerSlurryDepth || 0)).toFixed(0)}-${totalDepth.toFixed(0)} ft` }
-        ];
-
-        return (
-            <g>
-                <text x={tableX} y={tableY - 20} fontWeight="bold" fontSize="14">Legend</text>
-                {legendItems.map((item, index) => (
-                    <g key={`legend-${index}`} transform={`translate(0, ${index * rowHeight})`}>
-                        <rect x={tableX} y={tableY} width={colWidths[0]} height={rowHeight - 2} fill={item.color} />
-                        <text x={tableX + colWidths[0] + 5} y={tableY + rowHeight / 2} dominantBaseline="middle" fontSize="12">{item.label}</text>
-                        {item.details && (
-                            <text x={tableX + colWidths[0] + colWidths[1] + 5} y={tableY + rowHeight / 2} dominantBaseline="middle" fontSize="12">{item.details}</text>
-                        )}
-                    </g>
-                ))}
             </g>
         );
     };
@@ -276,9 +197,6 @@ const OilWell: React.FC<OilWellProps> = ({
             {/* Cement Slurry */}
             {drawCementSlurry()}
 
-            {/* Inner Slurry */}
-            {innerSlurryDepth > 0 && drawInnerSlurry()}
-
             {/* Packer */}
             {packerDepth !== null && drawPacker(packerDepth)}
 
@@ -289,8 +207,39 @@ const OilWell: React.FC<OilWellProps> = ({
                 <text x="10" y="70" fill="black" fontSize="14">Packer Depth: {packerDepth.toFixed(2)} ft</text>
             )}
 
-            {/* Legend Table */}
-            {drawLegendTable()}
+            {/* Legend */}
+            <rect x="10" y={svgHeight - 90} width="20" height="20" fill="#36454F" />
+            <text x="40" y={svgHeight - 75} fill="black" fontSize="12">Open Hole</text>
+            {sections.map((_, index) => (
+                <g key={`legend-${index}`}>
+                    <rect
+                        x="10"
+                        y={svgHeight - 60 + index * 25}
+                        width="20"
+                        height="20"
+                        fill={sectionColors[index % sectionColors.length]}
+                    />
+                    <text x="40" y={svgHeight - 45 + index * 25} fill="black" fontSize="12">Section {index + 1}</text>
+                </g>
+            ))}
+            <rect x="200" y={svgHeight - 30} width="20" height="5" fill="red" />
+            <text x="230" y={svgHeight - 15} fill="black" fontSize="12">Packer</text>
+            {fluids.map((fluid, index) => {
+                const colorIntensity = Math.max(0, Math.min(255, Math.floor(255 - fluid.density * 50)));
+                const fluidColor = `rgb(${colorIntensity}, ${colorIntensity}, 255)`;
+                return (
+                    <g key={`legend-fluid-${index}`}>
+                        <rect x="10" y={svgHeight - 120 - index * 25} width="20" height="20" fill={fluidColor} />
+                        <text x="40" y={svgHeight - 105 - index * 25} fill="black" fontSize="12">
+                            {fluid.type} (Depth: {Math.min(fluid.depth, totalDepth - slurryDepth).toFixed(0)} ft, Density: {fluid.density.toFixed(2)})
+                        </text>
+                    </g>
+                );
+            })}
+            <rect x="10" y={svgHeight - 120 - fluids.length * 25} width="20" height="20" fill="#4a4a4a" />
+            <text x="40" y={svgHeight - 105 - fluids.length * 25} fill="black" fontSize="12">
+                Cement (Depth: {(totalDepth - slurryDepth).toFixed(0)}-{totalDepth.toFixed(0)} ft)
+            </text>
         </svg>
     );
 };
